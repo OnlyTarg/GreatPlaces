@@ -18,22 +18,34 @@ class PlacesListScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Consumer<GreatPlaces>(
-        child: Center(
-          child: const Text('Got no places yet,statt adding some'),
-        ),
-        builder: (context, greatplaces, child) => greatplaces.items.length <= 0
-            ? child
-            : ListView.builder(
-                itemBuilder: (context, index) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: FileImage(greatplaces.items[index].image),
-                  ), title: Text(greatplaces.items[index].title),
-                  onTap: () {
-                    //go to detail page
-                  },
+      body: FutureBuilder(
+        future: Provider.of<GreatPlaces>(context, listen: false)
+            .fetchAndSetPlaces(),
+        builder: (context, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            :  Consumer<GreatPlaces>(
+                child: Center(
+                  child: const Text('Got no places yet,statt adding some'),
                 ),
-                itemCount: greatplaces.items.length,
+                builder: (context, greatplaces, child) =>
+                    greatplaces.items.length <= 0
+                        ? child
+                        : ListView.builder(
+                            itemBuilder: (context, index) => ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage:
+                                    FileImage(greatplaces.items[index].image),
+                              ),
+                              title: Text(greatplaces.items[index].title),
+                              onTap: () {
+                                //go to detail page
+                              },
+                            ),
+                            itemCount: greatplaces.items.length,
+                          ),
               ),
       ),
     );
